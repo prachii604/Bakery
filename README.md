@@ -43,7 +43,7 @@ This full-stack bakery web application allows users to view products, place orde
     - Git installed
 
 2. Clone repo
-    - git clone https://github.com/your-username/bakery-app.git
+    - git clone https://github.com/prachii604/bakery.git
     - cd bakery-app
 
 3. Start all services
