@@ -4,3 +4,5 @@ flask-migrate
 flask_cors
 alembic
 psycopg2-binary
+pika 
+

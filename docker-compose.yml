@@ -46,7 +46,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -59,17 +59,34 @@ services:
         max-file: "3"
 
   rabbitmq:
-    image: "rabbitmq:management"
+    image: "rabbitmq:3-management"
     container_name: bakery_rabbitmq
     restart: always
     ports:
-      - "5672:5672"
-      - "15672:15672" # RabbitMQ management UI
+      - "5672:5672"     # AMQP for app <-> RabbitMQ
+      - "15672:15672"   # Management UI
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+  worker:
+    build:
+      context: .
+      dockerfile: ./worker/dockerfile
+    container_name: bakery_worker
+    restart: unless-stopped
+    depends_on:
+      - db
+      - rabbitmq
+    environment:
+      DATABASE_URL: "postgresql://bakery_user:bakery_pass@db:5432/bakery_db"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+    volumes:
+      - ./worker:/app
+      - ./backend:/backend  # Needed if worker imports models from backend
+    command: python worker.py 
 
 volumes:
   pgdata:
